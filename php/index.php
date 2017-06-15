@@ -4,17 +4,24 @@
     public $method;
     public $action;
     public $validate;
+    public $errors;
+    public $scriptTag;
 
-    public function __construct($method, $action, $validate='') {
+    public function __construct($method, $action) {
       $this->method = $method;
       $this->action = htmlspecialchars($action);
-      $this->validate = $validate;
+      $this->validate = '';
+      $this->errors = [];
+      $this->scriptTag = '<script type="text/javascript" src="../js/form-validation.js"></script>';
     }
+
     public function toggleJavascriptValidation($boolean) {
       if ($boolean == false) {
         $this->validate = 'novalidate';
+        $this->scriptTag = '';
       } else {
         $this->validate = '';
+        $this->scriptTag = '<script type="text/javascript" src="../js/form-validation.js"></script>';
       }
     }
 
@@ -35,17 +42,16 @@
 
     public function handleSubmission(){
       global $conn;
-      $error = $emailError = '';
 
       if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // Get Form Values and Validate
         if (empty($_POST['name']) || empty($_POST['email'])) {
-          $error = "Name & Email fields are required!";
+          array_push($this->errors, 'Name and Email fields are required!');
         } else {
           $name = $this->validateForm($_POST['name']);
           $email = $this->validateForm($_POST['email']);
           if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $emailError = 'You have entered an invalid email address!';
+            array_push($this->errors, 'You entered an invalid email!');
           } else {
             // Write to DB table
             $query = "INSERT INTO subscribers (name, email) VALUES ('$name', '$email')";
@@ -66,8 +72,6 @@
       return $data;
     }
   }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -84,23 +88,21 @@
 
   <div class="container">
     <?php
-      global $error;
-      global $emailError;
-      $subscribeForm->toggleJavascriptValidation(false);
+      // $subscribeForm->toggleJavascriptValidation(false);
       echo $subscribeForm->displayForm();
       if (isset($_POST['name'])) {
-        echo $_POST['name'] . ' ' . $_POST['email'] . '<br>';
-        echo empty($_POST['name'] . '<br>');
         $subscribeForm->handleSubmission();
-        echo $error;
-      }         
+        foreach ($subscribeForm->errors as $error ) {
+          return '<p class-"error">' . $error . '</p>';
+        }  
+      }
     ?>
-    <p id="js-errors"></p>
-    <p id="php-errors"><?php echo $error ?></p>
-    <p id="php-errors"><?php echo $emailError ?></p>        
+    <p id="js-errors"></p>        
   </div>
 
-  <script type="text/javascript" src="../js/index.js"></script>
+  <?php
+    echo $subscribeForm->scriptTag;
+  ?>
   
 
 </body>

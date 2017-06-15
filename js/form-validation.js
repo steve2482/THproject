@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   const errorHTML = document.getElementById('js-errors');
 
   // Submit Form Event Listener
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('keyup', (e) => {
     e.preventDefault();
     errorHTML.innerHTML = '';
     validateForm();
