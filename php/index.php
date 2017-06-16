@@ -93,7 +93,8 @@
       if (isset($_POST['name'])) {
         $subscribeForm->handleSubmission();
         foreach ($subscribeForm->errors as $error ) {
-          return '<p class-"error">' . $error . '</p>';
+          $errorHTML = '<p class-"error">' . $error . '</p>';
+          echo $errorHTML;
         }  
       }
     ?>
