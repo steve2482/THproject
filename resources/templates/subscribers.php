@@ -1,6 +1,6 @@
 <?php
 
-  require('./db.php');
+  require_once(realpath(dirname(__FILE__) . "/../config.php"));
 
   $query = 'SELECT * FROM subscribers ORDER BY date DESC';
 
@@ -22,7 +22,7 @@
 </head>
 <body>
 
-  <?php include('inc/navbar.php'); ?>
+  <?php include('./navbar.php'); ?>
   
   <div class="container">
     <table class="table table-hover">
